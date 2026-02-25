@@ -11,7 +11,7 @@
     <link
         rel="shortcut icon"
         type="image/avif"
-        href="{% static 'images/cute-croissant.avif' %}"
+        href=""
     />
 
     {% block head %} 
@@ -21,13 +21,14 @@
     <header>
       <div class="header-logo-container">
         <a href="/">
-          <img src="{% static 'images/header-logo.avif' %}" alt="The Bake Collector Logo" />
+          <img src="" alt="The Bake Collector Logo" />
 
         </a>
       </div>
       <nav>
         <ul>
-          <li><a href="{% url 'bakes-index'%}">All Bakes</a></li>
+          <li><a href="{% url 'bake-index'%}">All Bakes</a></li>
+          <li><a href="{% url 'bake-create'%}">Add a Bake</a></li>
           <li><a href="{% url 'about' %}">About</a></li>
         </ul>
       </nav>

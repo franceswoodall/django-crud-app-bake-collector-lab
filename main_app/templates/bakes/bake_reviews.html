@@ -1,0 +1,41 @@
+{% load static %} 
+<section class="reviews">
+    <h2>Reviews</h2>
+
+        {% if bake.review_set.count %}
+            <p class="reviewed">{{ bake.name }} has review(s), but please add more</p>
+        {% else %}
+            <p class="not yet reviewed">{{bake.name}} is yet to be reviewed!</p>
+        {% endif %} 
+
+    <form
+        action="{% url 'add-review' bake.id %}"
+        method="post"
+        class="subsection-content"
+        >
+        {% csrf_token %} {{ review_form.as_p }} 
+        <button type="submit" class="btn submit">Add Review</button>
+    </form>
+
+    <h3>Past Reviews</h3>
+    {% if bake.review_set.count %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Rating</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for review in bake.review_set.all %}
+                <tr>
+                    <td>{{ review.date }}</td>
+                    <td>{{ review.get_rating_display }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>{{ bake.name }} is not yet reviewed! </p>
+    {% endif %}
+</section>

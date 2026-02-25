@@ -1,0 +1,29 @@
+{% extends 'base.html' %} 
+{% load static %} 
+{% block head %}
+<link rel="stylesheet" href="" />
+{% endblock %} 
+{% block content %}
+<section class="">
+  <div class="">
+    <img src="" alt="" />
+  </div>
+  <div class="bake-details">
+    <h1>{{ bake.name }}</h1>
+
+    <ul>
+      <li>Description: {{ bake.description }}</li>
+      <li>Bakery: {{ bake.bakery}}</li>
+      <li>Price:£ {{ bake.price }}</li>
+    </ul>
+
+  </div>
+    <div>
+      <a href="{% url 'bake-update' bake.id %}" class="btn warn">Edit</a>
+      <a href="{% url 'bake-delete' bake.id %}" class="btn danger">Delete</a>
+    </div>
+</section>
+<div class="reviews-container">
+  {% include 'bakes/bake_reviews.html' %}
+</div>
+{% endblock %}
