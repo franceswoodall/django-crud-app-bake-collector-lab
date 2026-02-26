@@ -41,7 +41,7 @@ class BakeList(ListView):
     def get_queryset(self):
         return Bake.objects.filter(user=self.request.user)
 
-class BakeDetail(DetailView): 
+class BakeDetail(LoginRequiredMixin, DetailView): 
     model = Bake 
     template_name = 'bakes/bake_detail.html'
     
@@ -56,6 +56,7 @@ class BakeCreate(LoginRequiredMixin, CreateView):
     model = Bake
     fields = ['name', 'bakery', 'description', 'price']
     template_name = 'bakes/bake_form.html'
+    success_url = reverse_lazy('bake-index')
 
     def form_valid(self, form):
         form.instance.user = self.request.user
@@ -75,7 +76,7 @@ class BakeDelete(LoginRequiredMixin, DeleteView):
 #Reviews - CRUD - function based 
 
 @login_required
-def add_review(request, pk):
+def review_add(request, pk):
     form = ReviewForm(request.POST)
     if form.is_valid(): 
         new_review = form.save(commit=False)
@@ -83,6 +84,31 @@ def add_review(request, pk):
         new_review.bake_id = pk 
         new_review.save()
     return redirect('bake-detail', pk=pk)
+
+@login_required
+def review_delete(request, bake_id, review_id):
+    review = Review.objects.get(id=review_id)
+    if review.user == request.user: 
+        review.delete()
+    return redirect('bake-detail', pk=bake_id)
+
+@login_required
+def review_edit(request, bake_id, review_id):
+    review = Review.objects.get(id=review_id)
+    if review.user != request.user: 
+        return redirect('bake-detail', pk=bake_id)
+
+    if request.method =='POST':
+        form = ReviewForm(request.POST, instance=review)
+        if form.is_valid(): 
+            form.save()
+            return redirect('bake-detail', pk=bake_id)
+    else: 
+        form = ReviewForm(instance=review)
+    return render(request, 'bakes/edit_review.html', {
+        'form': form, 
+        'bake_id': bake_id
+    })
 
 def signup(request): 
     error_message = ''

@@ -10,8 +10,10 @@ urlpatterns = [
     path('bakes/<int:pk>/', views.BakeDetail.as_view(), name='bake-detail'), 
     path('bakes/<int:pk>/update/', views.BakeUpdate.as_view(), name='bake-update'), 
     path('bakes/<int:pk>/delete/', views.BakeDelete.as_view(), name='bake-delete'), 
-    path('bakes/<int:pk>/add-review/', views.add_review, name='add-review'), 
+    path('bakes/<int:pk>/add-review/', views.review_add, name='review-add'), 
+    path('bakes/<int:bake_id>/edit-review/<int:review_id>/', views.review_edit, name='review-edit'), 
+    path('bakes/<int:bake_id>/delete-review/<int:review_id>/', views.review_delete, name='review-delete'), 
     path('admin/', admin.site.urls), 
     path('accounts/', include('django.contrib.auth.urls')), 
-    path('accounts/signup/', views.signup, name='signup')
+    path('accounts/signup/', views.signup, name='signup'), 
 ]

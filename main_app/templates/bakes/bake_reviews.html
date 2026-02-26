@@ -1,31 +1,21 @@
 {% load static %} 
 <section class="reviews">
     <h2>Reviews</h2>
+    {% if bake.review_set.count %}
+        <p class="reviewed">{{ bake.name }} has {{ bake.review_set.count }} review(s), but please add more!</p>
+    {% else %}
+        <p class="not-reviewed">{{ bake.name }} is yet to be reviewed!</p>
+    {% endif %}
 
-        {% if bake.review_set.count %}
-            <p class="reviewed">{{ bake.name }} has review(s), but please add more</p>
-        
-            {% for review in bake.review_set.all %}
-            <div class="review-item"></div>
-                <form action="{% url 'remove-review' bake.id review.id %}" method="post">
-                    {% csrf_token %} 
-                    <button type="submit" class="btn-danger">Remove Review</button>
-                </form>
-            </div>
-        {% endfor %}
-
-        {% else %}
-            <p class="not yet reviewed">{{bake.name}} is yet to be reviewed!</p>
-        {% endif %} 
-
-    <form
-        action="{% url 'add-review' bake.id %}"
-        method="post"
-        class="subsection-content"
-        >
-        {% csrf_token %} {{ review_form.as_p }} 
-        <button type="submit" class="btn submit">Add Review</button>
-    </form>
+    {% if user.is_authenticated %}
+        <form action="{% url 'review-add' bake.id %}" method="post" class="subsection-content">
+            {% csrf_token %} 
+            {{ review_form.as_p }} 
+            <button type="submit" class="btn submit">Add Review</button>
+        </form>
+    {% else %}
+        <p><a href="{% url 'login' %}">Log in</a> to leave a review!</p>
+    {% endif %}
 
     <h3>Past Reviews</h3>
     {% if bake.review_set.count %}
@@ -34,6 +24,7 @@
                 <tr>
                     <th>Date</th>
                     <th>Rating</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -41,6 +32,18 @@
                 <tr>
                     <td>{{ review.date }}</td>
                     <td>{{ review.get_rating_display }}</td>
+                    <td>
+                        {% if review.user == user %}
+                            <div class="table-actions">
+                                <a href="{% url 'review-edit' bake.id review.id %}" class="btn warn">Edit</a>
+
+                                <form action="{% url 'review-delete' bake.id review.id %}" method="POST"> 
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn-danger">Delete</button>
+                                </form>
+                            </div>
+                        {% endif %}
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>

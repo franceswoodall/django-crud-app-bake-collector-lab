@@ -1,0 +1,12 @@
+{% extends 'base.html' %} 
+{% block content %}
+<h1>Edit Review</h1>
+
+<form action="" method="post" class="form-container">
+  {% csrf_token %} 
+  {{ form.as_p }}
+  <button type="submit" class="btn submit">Update Review</button>
+  <a href="{% url 'bake-detail' bake_id %}">Cancel</a>
+</form>
+
+{% endblock %}
