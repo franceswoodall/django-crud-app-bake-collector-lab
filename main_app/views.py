@@ -1,17 +1,13 @@
 #models 
 from .models import Bake, Review
-
 from .forms import ReviewForm
 
 #django 
 from django.shortcuts import render, redirect
-from django.shortcuts import render
 
 #django - views
-from django.contrib.auth.views import LoginView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import ListView, DetailView
-from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
@@ -20,11 +16,10 @@ from django.urls import reverse_lazy
 from django.urls import reverse
 
 #auth 
+from django.contrib.auth.views import LoginView
+from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-
-
-
 
 # Create your views here.
 
@@ -109,6 +104,8 @@ def review_edit(request, bake_id, review_id):
         'form': form, 
         'bake_id': bake_id
     })
+
+# SignUp
 
 def signup(request): 
     error_message = ''
