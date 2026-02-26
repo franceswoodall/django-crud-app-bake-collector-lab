@@ -11,11 +11,18 @@ from django.shortcuts import render
 from django.contrib.auth.views import LoginView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import ListView, DetailView
+from django.contrib.auth import login
+from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
 #reverse_lazy
 from django.urls import reverse_lazy
 from django.urls import reverse
+
+#auth 
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+
 
 
 
@@ -31,6 +38,9 @@ class BakeList(ListView):
     model = Bake 
     template_name = 'bakes/bake_list.html'
 
+    def get_queryset(self):
+        return Bake.objects.filter(user=self.request.user)
+
 class BakeDetail(DetailView): 
     model = Bake 
     template_name = 'bakes/bake_detail.html'
@@ -40,31 +50,50 @@ class BakeDetail(DetailView):
         context['review_form'] = ReviewForm()
         return context
 
+#Bake - CRUD 
 
-class BakeCreate(CreateView): 
+class BakeCreate(LoginRequiredMixin, CreateView): 
     model = Bake
     fields = ['name', 'bakery', 'description', 'price']
     template_name = 'bakes/bake_form.html'
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
     
 
-    # def form_valid(self, form):
-    #     form.instance.user = self.request.user
-    #     return super().form_valid(form)
-
-class BakeUpdate(UpdateView): 
+class BakeUpdate(LoginRequiredMixin, UpdateView): 
     model = Bake
     fields = ['name', 'bakery', 'description', 'price']
     template_name = 'bakes/bake_form.html'
 
-class BakeDelete(DeleteView):
+class BakeDelete(LoginRequiredMixin, DeleteView):
     model = Bake
     template_name = 'bakes/bake_confirm_delete.html'
     success_url = reverse_lazy('bake-index')
 
+#Reviews - CRUD - function based 
+
+@login_required
 def add_review(request, pk):
     form = ReviewForm(request.POST)
     if form.is_valid(): 
         new_review = form.save(commit=False)
-        new_review.bake_id = pk
+        new_review.user = request.user
+        new_review.bake_id = pk 
         new_review.save()
     return redirect('bake-detail', pk=pk)
+
+def signup(request): 
+    error_message = ''
+    if request.method == 'POST': 
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('bake-index')
+        else:
+            error_message = 'Invalid sign up - try again'
+    form = UserCreationForm()
+    context = {'form': form, 'error_message': error_message}
+    return render(request, 'signup.html', context)

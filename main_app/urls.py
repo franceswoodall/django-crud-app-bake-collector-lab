@@ -1,4 +1,5 @@
-from django.urls import path 
+from django.urls import path, include
+from django.contrib import admin 
 from .import views 
 
 urlpatterns = [
@@ -10,4 +11,7 @@ urlpatterns = [
     path('bakes/<int:pk>/update/', views.BakeUpdate.as_view(), name='bake-update'), 
     path('bakes/<int:pk>/delete/', views.BakeDelete.as_view(), name='bake-delete'), 
     path('bakes/<int:pk>/add-review/', views.add_review, name='add-review'), 
+    path('admin/', admin.site.urls), 
+    path('accounts/', include('django.contrib.auth.urls')), 
+    path('accounts/signup/', views.signup, name='signup')
 ]
